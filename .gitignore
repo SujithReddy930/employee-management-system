@@ -1,0 +1,16 @@
+# Backend
+backend/target/
+backend/*.class
+backend/hs_err_pid*.log
+backend/replay_pid*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# General
+.idea/
+*.iml
+.vscode/
+.DS_Store
+*.log
