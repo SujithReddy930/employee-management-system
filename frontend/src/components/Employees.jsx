@@ -15,7 +15,9 @@ export default function Employees() {
     department: { id: '' }
   })
 
-  useEffect(() => { fetchData() }, [])
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   const fetchData = async () => {
     try {
@@ -24,6 +26,7 @@ export default function Employees() {
         getDepartments()
       ])
       setEmployees(empRes.data)
+      console.log('EMPLOYEES LIST:', empRes.data)
       setDepartments(deptRes.data)
     } catch (error) {
       console.error('Error:', error)
@@ -57,7 +60,7 @@ export default function Employees() {
       salary: emp.salary,
       joiningDate: emp.joiningDate,
       status: emp.status,
-      department: { id: emp.department?.id || '' }
+      department: { id: emp.departmentId || '' }
     })
     setShowModal(true)
   }
@@ -83,15 +86,13 @@ export default function Employees() {
     `${emp.firstName} ${emp.lastName} ${emp.email} ${emp.position}`
       .toLowerCase().includes(search.toLowerCase())
   )
-
-  const Required = () => <span className="text-red-500 ml-0.5">*</span>
+  console.log('DEPARTMENTS STATE:', departments)
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
       <p className="text-gray-500 text-lg">Loading...</p>
     </div>
   )
-
   return (
     <div className="p-8">
       {/* Header */}
@@ -114,7 +115,7 @@ export default function Employees() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         <input
           type="text"
-          placeholder="Search by name, email, position..."
+          placeholder="Search employees..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -144,7 +145,7 @@ export default function Employees() {
                   </td>
                   <td className="px-6 py-4 text-gray-600">{emp.email}</td>
                   <td className="px-6 py-4 text-gray-600">{emp.position}</td>
-                  <td className="px-6 py-4 text-gray-600">{emp.department?.name || 'N/A'}</td>
+                  <td className="px-6 py-4 text-gray-600">{emp.departmentName || 'N/A'}</td>
                   <td className="px-6 py-4 text-gray-600">₹{emp.salary?.toLocaleString()}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -189,7 +190,7 @@ export default function Employees() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-semibold text-gray-800">
                 {editingEmployee ? 'Edit Employee' : 'Add Employee'}
               </h3>
@@ -198,95 +199,70 @@ export default function Employees() {
               </button>
             </div>
 
-            {/* Required fields note */}
-            <p className="text-xs text-gray-400 mb-4">
-              Fields marked with <span className="text-red-500">*</span> are required
-            </p>
-
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-600 mb-1 block">
-                    First Name <Required />
-                  </label>
+                  <label className="text-sm text-gray-600 mb-1 block">First Name</label>
                   <input
                     type="text"
                     value={form.firstName}
                     onChange={e => setForm({...form, firstName: e.target.value})}
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter first name"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-600 mb-1 block">
-                    Last Name <Required />
-                  </label>
+                  <label className="text-sm text-gray-600 mb-1 block">Last Name</label>
                   <input
                     type="text"
                     value={form.lastName}
                     onChange={e => setForm({...form, lastName: e.target.value})}
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter last name"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Email <Required />
-                </label>
+                <label className="text-sm text-gray-600 mb-1 block">Email</label>
                 <input
                   type="email"
                   value={form.email}
                   onChange={e => setForm({...form, email: e.target.value})}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter email address"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Phone <Required />
-                </label>
+                <label className="text-sm text-gray-600 mb-1 block">Phone</label>
                 <input
                   type="text"
                   value={form.phone}
                   onChange={e => setForm({...form, phone: e.target.value})}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter phone number"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Position <Required />
-                </label>
+                <label className="text-sm text-gray-600 mb-1 block">Position</label>
                 <input
                   type="text"
                   value={form.position}
                   onChange={e => setForm({...form, position: e.target.value})}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter job position"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Salary <Required />
-                </label>
+                <label className="text-sm text-gray-600 mb-1 block">Salary</label>
                 <input
                   type="number"
                   value={form.salary}
                   onChange={e => setForm({...form, salary: e.target.value})}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter salary amount"
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Joining Date <Required />
-                </label>
+                <label className="text-sm text-gray-600 mb-1 block">Joining Date</label>
                 <input
                   type="date"
                   value={form.joiningDate}
@@ -296,12 +272,13 @@ export default function Employees() {
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Department <Required />
-                </label>
+                <label className="text-sm text-gray-600 mb-1 block">Department</label>
                 <select
                   value={form.department.id}
-                  onChange={e => setForm({...form, department: { id: e.target.value }})}
+                  onChange={e => {
+  console.log('Department selected:', e.target.value)
+  setForm({...form, department: { id: e.target.value }})
+}}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Select Department</option>
@@ -312,9 +289,7 @@ export default function Employees() {
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                  Status <Required />
-                </label>
+                <label className="text-sm text-gray-600 mb-1 block">Status</label>
                 <select
                   value={form.status}
                   onChange={e => setForm({...form, status: e.target.value})}
