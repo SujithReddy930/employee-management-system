@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: 'http://localhost:8080/api'
+  baseURL: 'https://employee-management-system-production-79a4.up.railway.app/api'
 })
 
 // Department APIs
