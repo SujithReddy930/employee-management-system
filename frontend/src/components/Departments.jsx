@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, X, Building2 } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, X, Building2 } from 'lucide-react'
 import { getDepartments, createDepartment, updateDepartment, deleteDepartment } from '../api'
 
 export default function Departments() {
   const [departments, setDepartments] = useState([])
+  const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editingDept, setEditingDept] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -11,9 +12,7 @@ export default function Departments() {
     name: '', description: '', managerName: '', location: ''
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  useEffect(() => { fetchData() }, [])
 
   const fetchData = async () => {
     try {
@@ -68,6 +67,11 @@ export default function Departments() {
     setForm({ name: '', description: '', managerName: '', location: '' })
   }
 
+  const filteredDepartments = departments.filter(dept =>
+    `${dept.name} ${dept.description} ${dept.managerName} ${dept.location}`
+      .toLowerCase().includes(search.toLowerCase())
+  )
+
   if (loading) return (
     <div className="flex items-center justify-center h-full">
       <p className="text-gray-500 text-lg">Loading...</p>
@@ -91,10 +95,22 @@ export default function Departments() {
         </button>
       </div>
 
-      {/* Grid of department cards */}
+      {/* Search */}
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <input
+          type="text"
+          placeholder="Search by name, manager, location..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Department Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {departments.map(dept => (
-          <div key={dept.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        {filteredDepartments.map(dept => (
+          <div key={dept.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition">
             <div className="flex items-start justify-between mb-4">
               <div className="bg-purple-100 p-3 rounded-lg">
                 <Building2 className="text-purple-600" size={24} />
@@ -129,9 +145,9 @@ export default function Departments() {
             </div>
           </div>
         ))}
-        {departments.length === 0 && (
+        {filteredDepartments.length === 0 && (
           <div className="col-span-full text-center text-gray-400 py-12">
-            No departments found. Add your first department!
+            No departments found.
           </div>
         )}
       </div>
@@ -148,7 +164,6 @@ export default function Departments() {
                 <X size={20} />
               </button>
             </div>
-
             <div className="space-y-4">
               <div>
                 <label className="text-sm text-gray-600 mb-1 block">Name</label>
@@ -187,7 +202,6 @@ export default function Departments() {
                 />
               </div>
             </div>
-
             <div className="flex gap-3 mt-6">
               <button
                 onClick={closeModal}
